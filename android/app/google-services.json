@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "183607749866",
+    "project_id": "bewell-c9d2f",
+    "storage_bucket": "bewell-c9d2f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:183607749866:android:68d1212e38b0493265fb93",
+        "android_client_info": {
+          "package_name": "com.example.shop_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "183607749866-s63ubrmf8tc020icrb3sqlt6hq212vs0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.shop_app",
+            "certificate_hash": "e1c3795470ad581f4925805ad198dedd8b1dbf45"
+          }
+        },
+        {
+          "client_id": "183607749866-snshj972or7fkitocd6usnpsn7cnu8s9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD56_7iXFUbHDzzK7cunwpraypVgG3jSZc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "183607749866-snshj972or7fkitocd6usnpsn7cnu8s9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -128,7 +128,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                           color: kPrimaryColor, fontWeight: FontWeight.w600),
                       children: [
                         TextSpan(
-                          text: "\$${widget.order.amount}",
+                          text: "Rs. ${widget.order.amount}",
                           style: TextStyle(fontSize: 16, color: Colors.black),
                         ),
                       ],

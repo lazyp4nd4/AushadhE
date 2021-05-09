@@ -49,9 +49,6 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     fun();
-
-    // _scrollController.animateTo(_scrollController.position.maxScrollExtent,
-    //     duration: Duration(milliseconds: 300), curve: Curves.ease);
   }
 
   @override

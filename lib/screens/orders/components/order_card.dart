@@ -30,7 +30,7 @@ class _OrderCardState extends State<OrderCard> {
                 SizedBox(height: 10),
                 Text.rich(
                   TextSpan(
-                    text: "\$${widget.order.amount}",
+                    text: "Rs. ${widget.order.amount}",
                     style: TextStyle(
                         fontWeight: FontWeight.w600, color: kPrimaryColor),
                     children: [

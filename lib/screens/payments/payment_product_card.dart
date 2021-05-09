@@ -80,7 +80,7 @@ class _PaymentProductCardState extends State<PaymentProductCard> {
               SizedBox(height: 10),
               Text.rich(
                 TextSpan(
-                  text: "\$$price",
+                  text: "Rs. $price",
                   style: TextStyle(
                       fontWeight: FontWeight.w600, color: kPrimaryColor),
                   children: [

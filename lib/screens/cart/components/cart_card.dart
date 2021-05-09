@@ -44,12 +44,12 @@ class CartCard extends StatelessWidget {
             SizedBox(height: 10),
             Text.rich(
               TextSpan(
-                text: "\$${cart.product.price}",
+                text: "Rs. ${cart.product.price}",
                 style: TextStyle(
                     fontWeight: FontWeight.w600, color: kPrimaryColor),
                 children: [
                   TextSpan(
-                      text: " x${cart.numOfItem}",
+                      text: " x ${cart.numOfItem}",
                       style: Theme.of(context).textTheme.bodyText1),
                 ],
               ),
@@ -58,7 +58,7 @@ class CartCard extends StatelessWidget {
         ),
         Spacer(),
         Text(
-          '$amount',
+          'Rs. $amount',
           style: TextStyle(fontSize: 18),
         )
       ],

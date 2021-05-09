@@ -63,7 +63,7 @@ class ProductCard extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          "\$${product.price}",
+                          "Rs. ${product.price}",
                           style: TextStyle(
                             fontSize: getProportionateScreenWidth(18),
                             fontWeight: FontWeight.w600,

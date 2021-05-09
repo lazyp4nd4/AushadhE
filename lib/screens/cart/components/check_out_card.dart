@@ -75,7 +75,7 @@ class _CheckoutCardState extends State<CheckoutCard> {
                     text: "Total:\n",
                     children: [
                       TextSpan(
-                        text: "\$${widget.total}",
+                        text: "Rs. ${widget.total}",
                         style: TextStyle(fontSize: 16, color: Colors.black),
                       ),
                     ],

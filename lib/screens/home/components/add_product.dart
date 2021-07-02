@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shop_app/components/default_button.dart';
@@ -20,6 +21,7 @@ class AddProduct extends StatefulWidget {
 
 class _AddProductState extends State<AddProduct> {
   String title, description;
+  bool processing = false;
   String imageUrl;
   int price;
   int rating;
@@ -122,12 +124,18 @@ class _AddProductState extends State<AddProduct> {
                         if (_formKey.currentState.validate()) {
                           _formKey.currentState.save();
                           // if all are valid then go to success screen
+                          setState(() {
+                            processing = true;
+                          });
 
                           await uploadImageToDb(image, title);
 
                           await DatabaseServices().addProduct(title,
                               description, price, rating, imageUrl, isPopular);
                           KeyboardUtil.hideKeyboard(context);
+                          setState(() {
+                            processing = false;
+                          });
                           Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(
@@ -145,191 +153,203 @@ class _AddProductState extends State<AddProduct> {
             ),
           ),
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: SizeConfig.screenHeight * 0.04),
-              Text(
-                "Add a New Product",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: getProportionateScreenWidth(28),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                "Please make sure you fill all the details correctly.",
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: SizeConfig.screenHeight * 0.08),
-              Form(
-                key: _formKey,
+        body: processing
+            ? Center(
+                child: SpinKitFadingCircle(color: kPrimaryColor, size: 100))
+            : SingleChildScrollView(
                 child: Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextFormField(
-                          keyboardType: TextInputType.name,
-                          onSaved: (newValue) => title = newValue,
-                          onChanged: (value) {
-                            if (value.isNotEmpty) {
-                              removeError(error: "Please enter Title");
-                            }
-                            return null;
-                          },
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              addError(error: "Please enter Title");
-                              return "";
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                            labelText: "Title",
-                            hintText: "Enter Title of Product",
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                          )),
+                    SizedBox(height: SizeConfig.screenHeight * 0.04),
+                    Text(
+                      "Add a New Product",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: getProportionateScreenWidth(28),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextFormField(
-                          keyboardType: TextInputType.streetAddress,
-                          onSaved: (newValue) => description = newValue,
-                          onChanged: (value) {
-                            if (value.isNotEmpty) {
-                              removeError(error: "Please enter Description");
-                            }
-                            return null;
-                          },
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              addError(error: "Please enter Description");
-                              return "";
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                            labelText: "Description",
-                            hintText: "Enter Description of Product",
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                          )),
+                    Text(
+                      "Please make sure you fill all the details correctly.",
+                      textAlign: TextAlign.center,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextFormField(
-                          keyboardType: TextInputType.number,
-                          onSaved: (newValue) => price = int.parse(newValue),
-                          onChanged: (value) {
-                            if (value.isNotEmpty) {
-                              removeError(error: "Please enter Price");
-                            }
-                            return null;
-                          },
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              addError(error: "Please enter Price");
-                              return "";
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                            labelText: "Price",
-                            hintText: "Enter Price of Product",
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                          )),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextFormField(
-                          keyboardType: TextInputType.name,
-                          onSaved: (newValue) => rating = int.parse(newValue),
-                          onChanged: (value) {
-                            if (value.isNotEmpty) {
-                              removeError(error: "Please enter Rating");
-                            }
-                            return null;
-                          },
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              addError(error: "Please enter Rating");
-                              return "";
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                            labelText: "Rating",
-                            hintText: "Enter Rating of Product",
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                          )),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextFormField(
-                          keyboardType: TextInputType.name,
-                          onSaved: (newValue) {
-                            if (newValue == "true") {
-                              setState(() {
-                                isPopular = true;
-                              });
-                            } else {
-                              setState(() {
-                                isPopular = false;
-                              });
-                            }
-                          },
-                          onChanged: (value) {
-                            if (value.isNotEmpty) {
-                              removeError(
-                                  error: "Please enter isPopular Status");
-                            }
-                            return null;
-                          },
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              addError(error: "Please enter isPopular Status");
-                              return "";
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                            labelText: "isPopular",
-                            hintText: "Mention either true or false",
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                          )),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: FormError(errors: errors),
-                    ),
-                    SizedBox(height: 10),
-                    (image != null)
-                        ? Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Container(
-                              child: Image.file(
-                                imageFile,
-                                fit: BoxFit.cover,
-                              ),
+                    SizedBox(height: SizeConfig.screenHeight * 0.08),
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                                keyboardType: TextInputType.name,
+                                onSaved: (newValue) => title = newValue,
+                                onChanged: (value) {
+                                  if (value.isNotEmpty) {
+                                    removeError(error: "Please enter Title");
+                                  }
+                                  return null;
+                                },
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    addError(error: "Please enter Title");
+                                    return "";
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  labelText: "Title",
+                                  hintText: "Enter Title of Product",
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.always,
+                                )),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                                keyboardType: TextInputType.streetAddress,
+                                onSaved: (newValue) => description = newValue,
+                                onChanged: (value) {
+                                  if (value.isNotEmpty) {
+                                    removeError(
+                                        error: "Please enter Description");
+                                  }
+                                  return null;
+                                },
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    addError(error: "Please enter Description");
+                                    return "";
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  labelText: "Description",
+                                  hintText: "Enter Description of Product",
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.always,
+                                )),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                                keyboardType: TextInputType.number,
+                                onSaved: (newValue) =>
+                                    price = int.parse(newValue),
+                                onChanged: (value) {
+                                  if (value.isNotEmpty) {
+                                    removeError(error: "Please enter Price");
+                                  }
+                                  return null;
+                                },
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    addError(error: "Please enter Price");
+                                    return "";
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  labelText: "Price",
+                                  hintText: "Enter Price of Product",
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.always,
+                                )),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                                keyboardType: TextInputType.name,
+                                onSaved: (newValue) =>
+                                    rating = int.parse(newValue),
+                                onChanged: (value) {
+                                  if (value.isNotEmpty) {
+                                    removeError(error: "Please enter Rating");
+                                  }
+                                  return null;
+                                },
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    addError(error: "Please enter Rating");
+                                    return "";
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  labelText: "Rating",
+                                  hintText: "Enter Rating of Product",
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.always,
+                                )),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                                keyboardType: TextInputType.name,
+                                onSaved: (newValue) {
+                                  if (newValue == "true") {
+                                    setState(() {
+                                      isPopular = true;
+                                    });
+                                  } else {
+                                    setState(() {
+                                      isPopular = false;
+                                    });
+                                  }
+                                },
+                                onChanged: (value) {
+                                  if (value.isNotEmpty) {
+                                    removeError(
+                                        error: "Please enter isPopular Status");
+                                  }
+                                  return null;
+                                },
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    addError(
+                                        error: "Please enter isPopular Status");
+                                    return "";
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  labelText: "isPopular",
+                                  hintText: "Mention either true or false",
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.always,
+                                )),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: FormError(errors: errors),
+                          ),
+                          SizedBox(height: 10),
+                          (image != null)
+                              ? Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Container(
+                                    child: Image.file(
+                                      imageFile,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                )
+                              : Container(),
+                          SizedBox(
+                            height: 20.0,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 20.0, right: 20, bottom: 20),
+                            child: DefaultButton(
+                              text: "Upload Image!",
+                              press: () => pickImage(),
                             ),
                           )
-                        : Container(),
-                    SizedBox(
-                      height: 20.0,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 20.0, right: 20, bottom: 20),
-                      child: DefaultButton(
-                        text: "Upload Image!",
-                        press: () => pickImage(),
+                        ],
                       ),
-                    )
+                    ),
                   ],
                 ),
-              ),
-            ],
-          ),
-        ));
+              ));
   }
 }
 

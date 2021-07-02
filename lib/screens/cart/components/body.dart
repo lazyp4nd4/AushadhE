@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shop_app/models/Cart.dart';
 import 'package:shop_app/models/Product.dart';
 import 'package:shop_app/services/databaseServices.dart';
 import 'package:shop_app/services/sharedPreferences.dart';
 
+import '../../../constants.dart';
 import '../../../size_config.dart';
 import 'cart_card.dart';
 
@@ -91,7 +93,11 @@ class _BodyState extends State<Body> {
                   }
 
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Text("Loading");
+                    return Center(
+                        child: SpinKitFadingCircle(
+                      color: kPrimaryColor,
+                      size: 100,
+                    ));
                   }
 
                   if (!snapshot.hasData || snapshot.data.docs.length == 0) {

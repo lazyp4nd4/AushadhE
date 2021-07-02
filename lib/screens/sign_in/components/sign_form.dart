@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:shop_app/components/custom_surfix_icon.dart';
 import 'package:shop_app/components/form_error.dart';
 import 'package:shop_app/helper/keyboard.dart';
@@ -20,6 +21,7 @@ class _SignFormState extends State<SignForm> {
   String email;
   String password;
   bool remember = false;
+  bool processing = false;
   AuthService _auth = AuthService();
   final List<String> errors = [];
 
@@ -39,62 +41,74 @@ class _SignFormState extends State<SignForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          buildEmailFormField(),
-          SizedBox(height: getProportionateScreenHeight(30)),
-          buildPasswordFormField(),
-          SizedBox(height: getProportionateScreenHeight(30)),
-          Row(
-            children: [
-              Checkbox(
-                value: remember,
-                activeColor: kPrimaryColor,
-                onChanged: (value) {
-                  setState(() {
-                    remember = value;
-                  });
-                },
-              ),
-              Text("Remember me"),
-              Spacer(),
-              GestureDetector(
-                onTap: () => Navigator.pushNamed(
-                    context, ForgotPasswordScreen.routeName),
-                child: Text(
-                  "Forgot Password",
-                  style: TextStyle(decoration: TextDecoration.underline),
+    return processing
+        ? Center(
+            child: SpinKitFadingCircle(
+            color: kPrimaryColor,
+            size: 100,
+          ))
+        : Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                buildEmailFormField(),
+                SizedBox(height: getProportionateScreenHeight(30)),
+                buildPasswordFormField(),
+                SizedBox(height: getProportionateScreenHeight(30)),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: remember,
+                      activeColor: kPrimaryColor,
+                      onChanged: (value) {
+                        setState(() {
+                          remember = value;
+                        });
+                      },
+                    ),
+                    Text("Remember me"),
+                    Spacer(),
+                    GestureDetector(
+                      onTap: () => Navigator.pushNamed(
+                          context, ForgotPasswordScreen.routeName),
+                      child: Text(
+                        "Forgot Password",
+                        style: TextStyle(decoration: TextDecoration.underline),
+                      ),
+                    )
+                  ],
                 ),
-              )
-            ],
-          ),
-          FormError(errors: errors),
-          SizedBox(height: getProportionateScreenHeight(20)),
-          DefaultButton(
-            text: "Continue",
-            press: () async {
-              if (_formKey.currentState.validate()) {
-                _formKey.currentState.save();
-                // if all are valid then go to success screen
+                FormError(errors: errors),
+                SizedBox(height: getProportionateScreenHeight(20)),
+                DefaultButton(
+                  text: "Continue",
+                  press: () async {
+                    if (_formKey.currentState.validate()) {
+                      setState(() {
+                        processing = true;
+                      });
+                      _formKey.currentState.save();
+                      // if all are valid then go to success screen
 
-                KeyboardUtil.hideKeyboard(context);
-                var ans = await _auth.signInWithEmail(email, password);
-                if (ans == true) {
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, LoginSuccessScreen.routeName, (route) => false);
-                } else {
-                  print("Not able to sign in");
-                  final snackBar = SnackBar(content: Text("$ans"));
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                }
-              }
-            },
-          ),
-        ],
-      ),
-    );
+                      KeyboardUtil.hideKeyboard(context);
+                      var ans = await _auth.signInWithEmail(email, password);
+                      setState(() {
+                        processing = false;
+                      });
+                      if (ans == true) {
+                        Navigator.pushNamedAndRemoveUntil(context,
+                            LoginSuccessScreen.routeName, (route) => false);
+                      } else {
+                        print("Not able to sign in");
+                        final snackBar = SnackBar(content: Text("$ans"));
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      }
+                    }
+                  },
+                ),
+              ],
+            ),
+          );
   }
 
   TextFormField buildPasswordFormField() {

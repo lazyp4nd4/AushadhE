@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:shop_app/components/custom_surfix_icon.dart';
 import 'package:shop_app/components/default_button.dart';
 import 'package:shop_app/components/form_error.dart';
@@ -20,6 +21,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
   String name;
   String phoneNumber;
   String address;
+  bool processing = false;
 
   void addError({String error}) {
     if (!errors.contains(error))
@@ -53,32 +55,38 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          buildFirstNameFormField(),
-          SizedBox(height: getProportionateScreenHeight(30)),
-          buildPhoneNumberFormField(),
-          SizedBox(height: getProportionateScreenHeight(30)),
-          buildAddressFormField(),
-          FormError(errors: errors),
-          SizedBox(height: getProportionateScreenHeight(40)),
-          DefaultButton(
-            text: "Continue",
-            press: () async {
-              if (_formKey.currentState.validate()) {
-                _formKey.currentState.save();
-                await DatabaseServices()
-                    .addDetails(name, address, phoneNumber, uid);
-                Navigator.pushNamedAndRemoveUntil(
-                    context, LoginSuccessScreen.routeName, (route) => false);
-              }
-            },
-          ),
-        ],
-      ),
-    );
+    return processing
+        ? Center(
+            child: SpinKitFadingCircle(
+            color: kPrimaryColor,
+            size: 100,
+          ))
+        : Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                buildFirstNameFormField(),
+                SizedBox(height: getProportionateScreenHeight(30)),
+                buildPhoneNumberFormField(),
+                SizedBox(height: getProportionateScreenHeight(30)),
+                buildAddressFormField(),
+                FormError(errors: errors),
+                SizedBox(height: getProportionateScreenHeight(40)),
+                DefaultButton(
+                  text: "Continue",
+                  press: () async {
+                    if (_formKey.currentState.validate()) {
+                      _formKey.currentState.save();
+                      await DatabaseServices()
+                          .addDetails(name, address, phoneNumber, uid);
+                      Navigator.pushNamedAndRemoveUntil(context,
+                          LoginSuccessScreen.routeName, (route) => false);
+                    }
+                  },
+                ),
+              ],
+            ),
+          );
   }
 
   TextFormField buildAddressFormField() {

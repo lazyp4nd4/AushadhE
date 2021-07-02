@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:shop_app/components/custom_surfix_icon.dart';
 import 'package:shop_app/components/default_button.dart';
 import 'package:shop_app/components/form_error.dart';
@@ -19,6 +20,7 @@ class _SignUpFormState extends State<SignUpForm> {
   String password;
   String confirmPassword;
   bool remember = false;
+  bool processing = false;
   final List<String> errors = [];
   AuthService _auth = AuthService();
 
@@ -38,38 +40,51 @@ class _SignUpFormState extends State<SignUpForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          buildEmailFormField(),
-          SizedBox(height: getProportionateScreenHeight(30)),
-          buildPasswordFormField(),
-          SizedBox(height: getProportionateScreenHeight(30)),
-          buildConformPassFormField(),
-          FormError(errors: errors),
-          SizedBox(height: getProportionateScreenHeight(40)),
-          DefaultButton(
-            text: "Continue",
-            press: () async {
-              if (_formKey.currentState.validate()) {
-                _formKey.currentState.save();
-                // if all are valid then go to success screen
-                var ans = await _auth.registerWithEmail(email, password);
-                if (ans == true) {
-                  Navigator.pushNamedAndRemoveUntil(context,
-                      CompleteProfileScreen.routeName, (route) => false);
-                } else {
-                  print("Not able to register");
-                  final snackBar = SnackBar(content: Text("$ans"));
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                }
-              }
-            },
-          ),
-        ],
-      ),
-    );
+    return processing
+        ? Center(
+            child: SpinKitFadingCircle(
+              color: kPrimaryColor,
+              size: 100,
+            ),
+          )
+        : Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                buildEmailFormField(),
+                SizedBox(height: getProportionateScreenHeight(30)),
+                buildPasswordFormField(),
+                SizedBox(height: getProportionateScreenHeight(30)),
+                buildConformPassFormField(),
+                FormError(errors: errors),
+                SizedBox(height: getProportionateScreenHeight(40)),
+                DefaultButton(
+                  text: "Continue",
+                  press: () async {
+                    if (_formKey.currentState.validate()) {
+                      _formKey.currentState.save();
+                      // if all are valid then go to success screen
+                      setState(() {
+                        processing = true;
+                      });
+                      var ans = await _auth.registerWithEmail(email, password);
+                      setState(() {
+                        processing = false;
+                      });
+                      if (ans == true) {
+                        Navigator.pushNamedAndRemoveUntil(context,
+                            CompleteProfileScreen.routeName, (route) => false);
+                      } else {
+                        print("Not able to register");
+                        final snackBar = SnackBar(content: Text("$ans"));
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      }
+                    }
+                  },
+                ),
+              ],
+            ),
+          );
   }
 
   TextFormField buildConformPassFormField() {

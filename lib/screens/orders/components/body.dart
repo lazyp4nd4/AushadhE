@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:shop_app/constants.dart';
 import 'package:shop_app/models/Order.dart';
 import 'package:shop_app/screens/orders/components/order_card.dart';
 import 'package:shop_app/screens/orders/components/order_detail.dart';
 import 'package:shop_app/services/sharedPreferences.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Body extends StatefulWidget {
   @override
@@ -124,7 +126,12 @@ class _BodyState extends State<Body> {
 
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
-                              return Text("Loading");
+                              return Center(
+                                child: SpinKitFadingCircle(
+                                  color: kPrimaryColor,
+                                  size: 100,
+                                ),
+                              );
                             }
 
                             if (!snapshot.hasData || snapshot.data == null) {

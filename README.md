@@ -94,7 +94,7 @@ Run the following command on Command Prompt to make sure Flutter is ready on you
 
 ### Install Android apk Directly
 
-Directly install the apk of WatchR from [this link](https://github.com/lazyp4nd4/WatchR/blob/main/Apk/app-release.apk)
+Directly install the apk of WatchR from [this link](https://github.com/lazyp4nd4/AushadhE/blob/main/Apk/app-release.apk)
 
 
 
